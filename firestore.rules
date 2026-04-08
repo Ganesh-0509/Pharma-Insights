@@ -1,0 +1,239 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Defines the utility function to check if the user is signed in.
+     * @path N/A
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Defines the utility function to check if the user is the owner of the resource.
+     * @path N/A
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Defines the utility function to check if the user is the owner of the resource and the resource exists.
+     * @path N/A
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && exists(/databases/$(database)/documents/users/$(userId));
+    }
+
+    /**
+     * @description Enforces that the `userId` in the request data matches the `userId` in the path for create operations.
+     * @path N/A
+     */
+    function isValidNewOwner(userId) {
+      return request.resource.data.id == userId;
+    }
+
+    /**
+     * @description Enforces that the `userId` field cannot be changed after creation.
+     * @path N/A
+     */
+    function isOwnerIdImmutable(userId) {
+        return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * @description Rules for the /users/{userId} collection.
+     * @path /users/{userId}
+     * @allow (create) - Authenticated user can create their own profile if the userId matches their auth.uid.
+     * @allow (get, update, delete) - Authenticated user can only access their own profile.
+     * @deny (list) - Listing users is not allowed.
+     * @deny (create) - Unauthenticated users cannot create profiles.
+     * @deny (update, delete) - Users cannot modify or delete other user profiles.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/moleculeQueries/{moleculeQueryId} collection.
+     * @path /users/{userId}/moleculeQueries/{moleculeQueryId}
+     * @allow (create) - Authenticated user can create a molecule query under their own user ID.
+     * @allow (get, list, update, delete) - Authenticated user can only access/modify molecule queries under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete molecule queries under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/moleculeQueries/{moleculeQueryId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/diseaseQueries/{diseaseQueryId} collection.
+     * @path /users/{userId}/diseaseQueries/{diseaseQueryId}
+     * @allow (create) - Authenticated user can create a disease query under their own user ID.
+     * @allow (get, list, update, delete) - Authenticated user can only access/modify disease queries under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete disease queries under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/diseaseQueries/{diseaseQueryId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/internalKnowledgeDocuments/{internalKnowledgeDocumentId} collection.
+     * @path /users/{userId}/internalKnowledgeDocuments/{internalKnowledgeDocumentId}
+     * @allow (create) - Authenticated user can create an internal knowledge document under their own user ID.
+     * @allow (get, list, update, delete) - Authenticated user can only access/modify internal knowledge documents under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete internal knowledge documents under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/internalKnowledgeDocuments/{internalKnowledgeDocumentId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/reports/{reportId} collection.
+     * @path /users/{userId}/reports/{reportId}
+     * @allow (create) - Authenticated user can create a report under their own user ID.
+     * @allow (get, list, update, delete) - Authenticated user can only access/modify reports under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete reports under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/reports/{reportId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+     /**
+      * @description Rules for the /users/{userId}/moleculeQueries/{moleculeQueryId}/clinicalTrialData/{clinicalTrialDataId} collection.
+      * @path /users/{userId}/moleculeQueries/{moleculeQueryId}/clinicalTrialData/{clinicalTrialDataId}
+      * @allow (get, list) - Authenticated user can access data under their own user ID.
+      * @allow (create, update, delete) - Authenticated user can only modify data under their own user ID.
+      * @deny (create, update, delete) - Users cannot create, modify, or delete data under other user IDs.
+      * @principle Enforces document ownership for writes.
+      */
+    match /users/{userId}/moleculeQueries/{moleculeQueryId}/clinicalTrialData/{clinicalTrialDataId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/moleculeQueries/{moleculeQueryId}/patentData/{patentDataId} collection.
+     * @path /users/{userId}/moleculeQueries/{moleculeQueryId}/patentData/{patentDataId}
+     * @allow (get, list) - Authenticated user can access data under their own user ID.
+     * @allow (create, update, delete) - Authenticated user can only modify data under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete data under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/moleculeQueries/{moleculeQueryId}/patentData/{patentDataId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/moleculeQueries/{moleculeQueryId}/webIntelligenceData/{webIntelligenceDataId} collection.
+     * @path /users/{userId}/moleculeQueries/{moleculeQueryId}/webIntelligenceData/{webIntelligenceDataId}
+     * @allow (get, list) - Authenticated user can access data under their own user ID.
+     * @allow (create, update, delete) - Authenticated user can only modify data under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete data under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/moleculeQueries/{moleculeQueryId}/webIntelligenceData/{webIntelligenceDataId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+   /**
+    * @description Rules for the /users/{userId}/moleculeQueries/{moleculeQueryId}/aiInsights/{aiInsightId} collection.
+    * @path /users/{userId}/moleculeQueries/{moleculeQueryId}/aiInsights/{aiInsightId}
+    * @allow (get, list) - Authenticated user can access data under their own user ID.
+    * @allow (create, update, delete) - Authenticated user can only modify data under their own user ID.
+    * @deny (create, update, delete) - Users cannot create, modify, or delete data under other user IDs.
+    * @principle Enforces document ownership for writes.
+    */
+    match /users/{userId}/moleculeQueries/{moleculeQueryId}/aiInsights/{aiInsightId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/diseaseQueries/{diseaseQueryId}/clinicalTrialData/{clinicalTrialDataId} collection.
+     * @path /users/{userId}/diseaseQueries/{diseaseQueryId}/clinicalTrialData/{clinicalTrialDataId}
+     * @allow (get, list) - Authenticated user can access data under their own user ID.
+     * @allow (create, update, delete) - Authenticated user can only modify data under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete data under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/diseaseQueries/{diseaseQueryId}/clinicalTrialData/{clinicalTrialDataId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/diseaseQueries/{diseaseQueryId}/patentData/{patentDataId} collection.
+     * @path /users/{userId}/diseaseQueries/{diseaseQueryId}/patentData/{patentDataId}
+     * @allow (get, list) - Authenticated user can access data under their own user ID.
+     * @allow (create, update, delete) - Authenticated user can only modify data under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete data under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/diseaseQueries/{diseaseQueryId}/patentData/{patentDataId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/diseaseQueries/{diseaseQueryId}/webIntelligenceData/{webIntelligenceDataId} collection.
+     * @path /users/{userId}/diseaseQueries/{diseaseQueryId}/webIntelligenceData/{webIntelligenceDataId}
+     * @allow (get, list) - Authenticated user can access data under their own user ID.
+     * @allow (create, update, delete) - Authenticated user can only modify data under their own user ID.
+     * @deny (create, update, delete) - Users cannot create, modify, or delete data under other user IDs.
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/diseaseQueries/{diseaseQueryId}/webIntelligenceData/{webIntelligenceDataId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+  }
+}

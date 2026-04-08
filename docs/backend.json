@@ -1,0 +1,658 @@
+
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user within the Pharma Insights Explorer application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user.",
+          "format": "uuid"
+        },
+        "googleId": {
+          "type": "string",
+          "description": "The Google ID of the user, used for Google login.",
+          "format": "string"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "Date and time the user registered.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "firstName",
+        "lastName",
+        "registrationDate"
+      ]
+    },
+    "MoleculeQuery": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MoleculeQuery",
+      "type": "object",
+      "description": "Represents a query for a molecule.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the molecule query."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who made the query. (Relationship: User 1:N MoleculeQuery)"
+        },
+        "queryText": {
+          "type": "string",
+          "description": "The text of the molecule query."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the query was made.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "queryText",
+        "timestamp"
+      ]
+    },
+    "DiseaseQuery": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DiseaseQuery",
+      "type": "object",
+      "description": "Represents a query for a disease.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the disease query."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who made the query. (Relationship: User 1:N DiseaseQuery)"
+        },
+        "queryText": {
+          "type": "string",
+          "description": "The text of the disease query."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the query was made.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "queryText",
+        "timestamp"
+      ]
+    },
+    "ClinicalTrialData": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ClinicalTrialData",
+      "type": "object",
+      "description": "Represents clinical trial data retrieved from external sources.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the clinical trial data."
+        },
+        "moleculeQueryId": {
+          "type": "string",
+          "description": "Reference to the MoleculeQuery that triggered the retrieval of this data. (Relationship: MoleculeQuery 1:N ClinicalTrialData)"
+        },
+        "diseaseQueryId": {
+          "type": "string",
+          "description": "Reference to the DiseaseQuery that triggered the retrieval of this data. (Relationship: DiseaseQuery 1:N ClinicalTrialData)"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of the clinical trial data (e.g., ClinicalTrials.gov, WHO ICTRP)."
+        },
+        "trialId": {
+          "type": "string",
+          "description": "Identifier of the trial in the source database."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the clinical trial."
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief summary of the clinical trial."
+        },
+        "url": {
+          "type": "string",
+          "description": "URL to the clinical trial details.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "trialId",
+        "title",
+        "summary",
+        "url"
+      ]
+    },
+    "PatentData": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PatentData",
+      "type": "object",
+      "description": "Represents patent information retrieved from external sources.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the patent data."
+        },
+        "moleculeQueryId": {
+          "type": "string",
+          "description": "Reference to the MoleculeQuery that triggered the retrieval of this data. (Relationship: MoleculeQuery 1:N PatentData)"
+        },
+        "diseaseQueryId": {
+          "type": "string",
+          "description": "Reference to the DiseaseQuery that triggered the retrieval of this data. (Relationship: DiseaseQuery 1:N PatentData)"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of the patent data (e.g., USPTO, PatentsView)."
+        },
+        "patentNumber": {
+          "type": "string",
+          "description": "Patent number."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the patent."
+        },
+        "abstract": {
+          "type": "string",
+          "description": "Abstract of the patent."
+        },
+        "url": {
+          "type": "string",
+          "description": "URL to the patent details.",
+          "format": "uri"
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "Date of application for the patent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "patentNumber",
+        "title",
+        "abstract",
+        "url"
+      ]
+    },
+    "WebIntelligenceData": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WebIntelligenceData",
+      "type": "object",
+      "description": "Represents literature and guideline information gathered from web sources.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the web intelligence data."
+        },
+        "moleculeQueryId": {
+          "type": "string",
+          "description": "Reference to the MoleculeQuery that triggered the retrieval of this data. (Relationship: MoleculeQuery 1:N WebIntelligenceData)"
+        },
+        "diseaseQueryId": {
+          "type": "string",
+          "description": "Reference to the DiseaseQuery that triggered the retrieval of this data. (Relationship: DiseaseQuery 1:N WebIntelligenceData)"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of the data (e.g., PubMed, NCBI)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the article or guideline."
+        },
+        "abstract": {
+          "type": "string",
+          "description": "Abstract or summary of the article or guideline."
+        },
+        "url": {
+          "type": "string",
+          "description": "URL to the article or guideline.",
+          "format": "uri"
+        },
+        "publicationDate": {
+          "type": "string",
+          "description": "Publication date of the article or guideline.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "title",
+        "abstract",
+        "url"
+      ]
+    },
+    "InternalKnowledgeDocument": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "InternalKnowledgeDocument",
+      "type": "object",
+      "description": "Represents a document uploaded by the user for internal knowledge integration.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the internal knowledge document."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who uploaded the document. (Relationship: User 1:N InternalKnowledgeDocument)"
+        },
+        "filename": {
+          "type": "string",
+          "description": "Original filename of the uploaded document."
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "Date and time the document was uploaded.",
+          "format": "date-time"
+        },
+        "summary": {
+          "type": "string",
+          "description": "AI-generated summary of the document."
+        },
+        "fileLocation": {
+          "type": "string",
+          "description": "Location where the actual document file is stored."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "filename",
+        "uploadDate",
+        "summary",
+        "fileLocation"
+      ]
+    },
+    "AiInsight": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AiInsight",
+      "type": "object",
+      "description": "Represents AI-generated insights and repurposing suggestions for molecules.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AI insight."
+        },
+        "moleculeQueryId": {
+          "type": "string",
+          "description": "Reference to the MoleculeQuery that generated this insight. (Relationship: MoleculeQuery 1:N AiInsight)"
+        },
+        "insightText": {
+          "type": "string",
+          "description": "The AI-generated insight text."
+        },
+        "repurposingScore": {
+          "type": "number",
+          "description": "Repurposing score (0-100) assigned by the AI."
+        },
+        "generationDate": {
+          "type": "string",
+          "description": "Date and time the insight was generated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "insightText",
+        "repurposingScore",
+        "generationDate"
+      ]
+    },
+    "Report": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Report",
+      "type": "object",
+      "description": "Represents a generated report compiling data from various agents.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the report."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who generated the report. (Relationship: User 1:N Report)"
+        },
+        "moleculeQueryId": {
+          "type": "string",
+          "description": "Reference to the MoleculeQuery associated with this report. (Relationship: MoleculeQuery 1:N Report)"
+        },
+        "diseaseQueryId": {
+          "type": "string",
+          "description": "Reference to the DiseaseQuery associated with this report. (Relationship: DiseaseQuery 1:N Report)"
+        },
+        "reportType": {
+          "type": "string",
+          "description": "Type of the report (e.g., PDF, Excel)."
+        },
+        "generationDate": {
+          "type": "string",
+          "description": "Date and time the report was generated.",
+          "format": "date-time"
+        },
+        "fileLocation": {
+          "type": "string",
+          "description": "Location where the report file is stored."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "reportType",
+        "generationDate",
+        "fileLocation"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. The 'userId' parameter is the unique identifier for the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/moleculeQueries/{moleculeQueryId}",
+        "definition": {
+          "entityName": "MoleculeQuery",
+          "schema": {
+            "$ref": "#/backend/entities/MoleculeQuery"
+          },
+          "description": "Stores molecule queries made by a specific user.  The 'userId' is denormalized to enable authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "moleculeQueryId",
+              "description": "Unique identifier for the molecule query."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/diseaseQueries/{diseaseQueryId}",
+        "definition": {
+          "entityName": "DiseaseQuery",
+          "schema": {
+            "$ref": "#/backend/entities/DiseaseQuery"
+          },
+          "description": "Stores disease queries made by a specific user. The 'userId' is denormalized to enable authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "diseaseQueryId",
+              "description": "Unique identifier for the disease query."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/internalKnowledgeDocuments/{internalKnowledgeDocumentId}",
+        "definition": {
+          "entityName": "InternalKnowledgeDocument",
+          "schema": {
+            "$ref": "#/backend/entities/InternalKnowledgeDocument"
+          },
+          "description": "Stores internal knowledge documents uploaded by a specific user.  The 'userId' is denormalized to enable authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "internalKnowledgeDocumentId",
+              "description": "Unique identifier for the internal knowledge document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/reports/{reportId}",
+        "definition": {
+          "entityName": "Report",
+          "schema": {
+            "$ref": "#/backend/entities/Report"
+          },
+          "description": "Stores reports generated by a specific user.  The 'userId' is denormalized to enable authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "reportId",
+              "description": "Unique identifier for the report."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/moleculeQueries/{moleculeQueryId}/clinicalTrialData/{clinicalTrialDataId}",
+        "definition": {
+          "entityName": "ClinicalTrialData",
+          "schema": {
+            "$ref": "#/backend/entities/ClinicalTrialData"
+          },
+          "description": "Stores clinical trial data associated with a specific molecule query.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "moleculeQueryId",
+              "description": "Unique identifier for the molecule query."
+            },
+            {
+              "name": "clinicalTrialDataId",
+              "description": "Unique identifier for the clinical trial data."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/moleculeQueries/{moleculeQueryId}/patentData/{patentDataId}",
+        "definition": {
+          "entityName": "PatentData",
+          "schema": {
+            "$ref": "#/backend/entities/PatentData"
+          },
+          "description": "Stores patent data associated with a specific molecule query.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "moleculeQueryId",
+              "description": "Unique identifier for the molecule query."
+            },
+            {
+              "name": "patentDataId",
+              "description": "Unique identifier for the patent data."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/moleculeQueries/{moleculeQueryId}/webIntelligenceData/{webIntelligenceDataId}",
+        "definition": {
+          "entityName": "WebIntelligenceData",
+          "schema": {
+            "$ref": "#/backend/entities/WebIntelligenceData"
+          },
+          "description": "Stores web intelligence data associated with a specific molecule query.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "moleculeQueryId",
+              "description": "Unique identifier for the molecule query."
+            },
+            {
+              "name": "webIntelligenceDataId",
+              "description": "Unique identifier for the web intelligence data."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/moleculeQueries/{moleculeQueryId}/aiInsights/{aiInsightId}",
+        "definition": {
+          "entityName": "AiInsight",
+          "schema": {
+            "$ref": "#/backend/entities/AiInsight"
+          },
+          "description": "Stores AI insights associated with a specific molecule query.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "moleculeQueryId",
+              "description": "Unique identifier for the molecule query."
+            },
+            {
+              "name": "aiInsightId",
+              "description": "Unique identifier for the AI insight."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/diseaseQueries/{diseaseQueryId}/clinicalTrialData/{clinicalTrialDataId}",
+        "definition": {
+          "entityName": "ClinicalTrialData",
+          "schema": {
+            "$ref": "#/backend/entities/ClinicalTrialData"
+          },
+          "description": "Stores clinical trial data associated with a specific disease query.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "diseaseQueryId",
+              "description": "Unique identifier for the disease query."
+            },
+            {
+              "name": "clinicalTrialDataId",
+              "description": "Unique identifier for the clinical trial data."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/diseaseQueries/{diseaseQueryId}/patentData/{patentDataId}",
+        "definition": {
+          "entityName": "PatentData",
+          "schema": {
+            "$ref": "#/backend/entities/PatentData"
+          },
+          "description": "Stores patent data associated with a specific disease query.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "diseaseQueryId",
+              "description": "Unique identifier for the disease query."
+            },
+            {
+              "name": "patentDataId",
+              "description": "Unique identifier for the patent data."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/diseaseQueries/{diseaseQueryId}/webIntelligenceData/{webIntelligenceDataId}",
+        "definition": {
+          "entityName": "WebIntelligenceData",
+          "schema": {
+            "$ref": "#/backend/entities/WebIntelligenceData"
+          },
+          "description": "Stores web intelligence data associated with a specific disease query.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
+              "name": "diseaseQueryId",
+              "description": "Unique identifier for the disease query."
+            },
+            {
+              "name": "webIntelligenceDataId",
+              "description": "Unique identifier for the web intelligence data."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability. It leverages path-based ownership for user-related data and segregates data types into separate collections to simplify security rules.\n\n1.  **Users Collection:** Stores user profiles. Authentication relies on `request.auth.uid`, which should match the `userId` in documents to enforce ownership.\n2.  **User-Owned Data (MoleculeQuery, DiseaseQuery, InternalKnowledgeDocument, Report):** These entities are stored as subcollections under the `/users/{userId}` path. This establishes clear ownership and allows straightforward security rules based on the `userId`. This design eliminates the need for `get()` calls to verify ownership.\n3.  **Data Segregation:** Each entity type (MoleculeQuery, DiseaseQuery, etc.) has its own collection, ensuring a homogeneous security posture within each collection.\n4.  **ClinicalTrialData, PatentData, WebIntelligenceData, AiInsight:** These entities are stored as subcollections under their respective query documents. This reflects the relationships between these entities and their parent queries (MoleculeQuery or DiseaseQuery). The `moleculeQueryId` and `diseaseQueryId` fields within these entities link them back to the appropriate parent query.\n\n**Authorization Independence:** Achieved by denormalizing the `userId` into the `MoleculeQuery`, `DiseaseQuery`, `InternalKnowledgeDocument`, and `Report` documents. This removes the need for complex authorization rules that require fetching parent documents.\n\n**QAPs (Rules are not Filters):** The structure supports secure `list` operations because each collection has a clear security posture. For example, listing documents in `/users/{userId}/moleculeQueries` is secure because all documents in that collection are owned by the specified user. Path-based ownership ensures that users can only access data under their own user ID, making filtering unnecessary in the security rules."
+  }
+}
